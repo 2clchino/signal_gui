@@ -1,0 +1,12 @@
+name: signal_gui
+
+channels:
+  - conda-forge
+
+# 環境構築 conda env create --name signal_gui --file signal_gui.yaml
+# 更新    conda env update --name signal_gui --file signal_gui.yaml
+dependencies:
+  - python=3.8
+  - matplotlib
+  - numpy
+  - pandas

@@ -63,29 +63,17 @@ class Application(tk.Frame):
         thread.start()
         
     def plot(self):
-        i = 0
         while 1:
-            if self.input == False:
-                print("動作を途中停止します。")
-                flg = True
-                break
+            time.sleep(1)
+            self.data_x.append(self.index)
+            self.data_y.append(self.index)
+            if (len(self.data_x)>10):
+                cnt = 10
             else:
-                print("カウント",i)
-                time.sleep(1)
-                i += 1
-        """
-        while 1:
-            if self.input:
-                time.sleep(1)
-                self.data_x.append(self.index)
-                self.data_y.append(self.index)
-                self.ax.plot(self.data_x, self.data_y)
-                self.index+=1
-                self.fig_canvas.draw()
-            else:
-                print("Stop Plot")
-                break
-        """
+                cnt = len(self.data_x)
+            self.ax.plot(self.data_x[-(cnt-1):], self.data_y[-(cnt-1):])
+            self.index+=1
+            self.fig_canvas.draw()
 
     def signal_stop(self):
         self.input = False
