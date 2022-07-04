@@ -11,7 +11,7 @@ import func
 p_count = 20
 active = False
 interval = 1000
-frames = int(100000 / interval)
+frames = int(10000 / interval)
 x_data = []
 y_data = []
 
@@ -40,7 +40,7 @@ def update(frame):
 def _set_interval():
     global interval, frames
     interval = int(tf_inter.get())
-    frames = int(100000 / interval)
+    frames = int(10000 / interval)
 
 def _set_plc():
     global p_count
@@ -60,6 +60,10 @@ def _reload():
     ani._stop()
     ani = None
     _init_anim()
+
+def _save_gif():
+    global ani
+    ani.save("test.gif", writer = 'pillow')
 
 # ----------------------------------------
 
@@ -90,4 +94,6 @@ inter_button.pack(side=tkinter.LEFT)
 tf_plc = tkinter.Entry(width=20)
 tf_plc.insert(tkinter.END,"20")
 tf_plc.pack(side=tkinter.LEFT)
+inter_button = tkinter.Button(master=root, text="SaveGIF", command=_save_gif)
+inter_button.pack(side=tkinter.LEFT)
 tkinter.mainloop()
