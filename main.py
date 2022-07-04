@@ -38,16 +38,16 @@ def update(frame):
     ax.plot(frame, y, "o")
 
 def _set_interval():
-    global interval
+    global interval, frames
     interval = int(tf_inter.get())
+    frames = int(100000 / interval)
 
 def _set_plc():
     global p_count
     p_count = int(tf_plc.get())
 
-def _start():
+def _init_anim():
     global ani, fig, active
-    print("START")
     ani = animation.FuncAnimation(fig, update, frames=range(frames), interval=interval)
     ani._start()
     active = True
@@ -59,13 +59,12 @@ def _reload():
     ax.cla()
     ani._stop()
     ani = None
-    ani = animation.FuncAnimation(fig, update, frames=range(frames), interval=interval)
-    ani._start()
+    _init_anim()
 
 # ----------------------------------------
 
 root = tkinter.Tk()
-root.wm_title("Embedding in Tk anim")
+root.wm_title("Signal GUI")
 fig = plt.figure()
 canvas = FigureCanvasTkAgg(fig, master=root)
 toolbar = NavigationToolbar2Tk(canvas, root)
@@ -73,7 +72,7 @@ ani = None
 ax = fig.add_subplot(111)
 canvas.get_tk_widget().pack()
 
-stop_button = tkinter.Button(master=root, text="START", command=_start)
+stop_button = tkinter.Button(master=root, text="START", command=_init_anim)
 stop_button.pack(side=tkinter.LEFT)
 stop_button = tkinter.Button(master=root, text="|▶", command=_stop)
 stop_button.pack(side=tkinter.LEFT)
