@@ -1,3 +1,8 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
 int data(int t){
-    return t*2;
+    srand((unsigned int)time(NULL)+t);
+    return rand() % 10 + 1;
 }
