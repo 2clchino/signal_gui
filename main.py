@@ -6,6 +6,8 @@ from matplotlib.backends.backend_tkagg import (
 import matplotlib.animation as animation
 import matplotlib.pyplot as plt
 import func
+import read
+import numpy as np
 
 # ----------------------------------------
 
@@ -15,6 +17,12 @@ interval = 100
 frames = int(100000 / interval)
 line = True
 plot = True
+
+cnt40=np.empty(0)
+cnt100=np.empty(0)
+tim40=np.empty(0)
+tim100=np.empty(0)
+link=0
 x_data = []
 y_data = []
 
@@ -29,19 +37,26 @@ def _stop():
     active = not active
 
 def update(frame):
-    x_data.append(frame)
-    y = func.data(frame)
-    y_data.append(y)
+    update_value()
+    y_data = np.diff(cnt40).tolist()
+    x_data = tim40.tolist()
     ax.cla()
-    if (len(x_data) > p_count):
-        x_data.pop(0)
-        y_data.pop(0)
-        ax.set_xlim(x_data[0]-0.5, x_data[len(x_data)-1]+0.5)
-        ax.set_ylim(min(y_data)-0.5, max(y_data)+0.5)
+    if (len(y_data) > p_count):
+        y_data = y_data[len(y_data)-p_count-1:len(y_data)-1]
+        x_data = x_data[len(x_data)-p_count-2:len(x_data)-1]
     if line:
-        ax.plot(x_data, y_data, color = "blue")
+        ax.plot(x_data[1:], y_data, color = "blue")
     if plot:
-        ax.plot(x_data, y_data, "o")
+        ax.plot(x_data[1:], y_data, "o")
+
+def update_value():
+    global link, cnt40, tim40, cnt100, tim100
+    values = read.value()
+    cnt40 = np.append(cnt40, values[0])
+    cnt100 = np.append(cnt100, values[1])
+    tim40 = np.append(tim40, values[2])
+    tim100 = np.append(tim100, values[3])
+    link = values[4]
 
 def _set_interval():
     global interval, frames
@@ -54,7 +69,7 @@ def _set_plc():
 
 def _init_anim():
     global ani, fig, active
-    ani = animation.FuncAnimation(fig, update, frames=range(frames), interval=interval)
+    ani = animation.FuncAnimation(fig, update, frames=range(frames), init_func=update_value, interval=interval)
     ani._start()
     active = True
 

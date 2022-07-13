@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <sys/types.h>
-#include <unistd.h>
+// #include <unistd.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <stdint.h>
@@ -15,6 +15,7 @@ int main(void){
 }
 
 int64_t* value(void){
+  /*
   int fd = open("/dev/xdma0_c2h_0", O_RDONLY);
   printf("FD: %d\n", fd);
   
@@ -24,5 +25,8 @@ int64_t* value(void){
   int len = read(fd, buf, 32*8);
   close(fd);
   printf("Len: %d\n", len);
+  */
+  for (int i=0; i<32; i++)
+    buf[i] = i*2;
   return buf;
 }
