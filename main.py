@@ -1,13 +1,15 @@
 from json import tool
 import tkinter
 from turtle import color
-from matplotlib.backends.backend_tkagg import (
-    FigureCanvasTkAgg, NavigationToolbar2Tk)
-import matplotlib.animation as animation
-import matplotlib.pyplot as plt
-import func
-import read
+import matplotlib
 import numpy as np
+print(matplotlib.__version__)
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_tkagg import (
+    FigureCanvasTkAgg)
+import matplotlib.animation as animation
+import read
 
 # ----------------------------------------
 
@@ -17,14 +19,16 @@ interval = 100
 frames = int(100000 / interval)
 line = True
 plot = True
+tim40_ofst = 0
+tim100_ofst = 0
 
 cnt40=np.empty(0)
 cnt100=np.empty(0)
 tim40=np.empty(0)
 tim100=np.empty(0)
 link=0
-x_data = []
-y_data = []
+
+t_frames = []
 
 # ----------------------------------------
 
@@ -39,23 +43,35 @@ def _stop():
 def update(frame):
     update_value()
     y_data = np.diff(cnt40).tolist()
-    x_data = tim40.tolist()
+    t_frames.append(frame)
+    x_data = t_frames
+    print(len(x_data), len(y_data))
     ax.cla()
     if (len(y_data) > p_count):
         y_data = y_data[len(y_data)-p_count-1:len(y_data)-1]
-        x_data = x_data[len(x_data)-p_count-2:len(x_data)-1]
+        x_data = x_data[len(x_data)-p_count-1:len(x_data)-1]
     if line:
-        ax.plot(x_data[1:], y_data, color = "blue")
+        ax.plot(x_data, y_data, color = "blue")
     if plot:
-        ax.plot(x_data[1:], y_data, "o")
+        ax.plot(x_data, y_data, "o")
+    y_data = np.diff(cnt100).tolist()
+    if (len(y_data) > p_count):
+        y_data = y_data[len(y_data)-p_count-1:len(y_data)-1]
+    if line:
+        ax.plot(x_data, y_data, color = "orange")
+    if plot:
+        ax.plot(x_data, y_data, "x")
 
 def update_value():
-    global link, cnt40, tim40, cnt100, tim100
+    global link, cnt40, tim40, cnt100, tim100, tim40_ofst, tim100_ofst
     values = read.value()
+    if (tim40_ofst == 0 and tim100_ofst == 0):
+        tim40_ofst = values[2]
+        tim100_ofst = values[3]
     cnt40 = np.append(cnt40, values[0])
     cnt100 = np.append(cnt100, values[1])
-    tim40 = np.append(tim40, values[2])
-    tim100 = np.append(tim100, values[3])
+    tim40 = np.append(tim40, values[2] - tim40_ofst)
+    tim100 = np.append(tim100, values[3] - tim100_ofst)
     link = values[4]
 
 def _set_interval():
@@ -74,9 +90,7 @@ def _init_anim():
     active = True
 
 def _reload():
-    global x_data, y_data, ani
-    x_data = []
-    y_data = []
+    global ani
     ax.cla()
     ani._stop()
     ani = None
@@ -100,7 +114,7 @@ root = tkinter.Tk()
 root.wm_title("Signal GUI")
 fig = plt.figure()
 canvas = FigureCanvasTkAgg(fig, master=root)
-toolbar = NavigationToolbar2Tk(canvas, root)
+#toolbar = NavigationToolbar2Tk(canvas, root)
 ani = None
 ax = fig.add_subplot(111)
 ax.grid()
@@ -108,9 +122,9 @@ canvas.get_tk_widget().pack()
 
 stop_button = tkinter.Button(master=root, text="START", command=_init_anim)
 stop_button.pack(side=tkinter.LEFT)
-stop_button = tkinter.Button(master=root, text="|▶", command=_stop)
+stop_button = tkinter.Button(master=root, text="ss", command=_stop)
 stop_button.pack(side=tkinter.LEFT)
-stop_button = tkinter.Button(master=root, text="↻", command=_reload)
+stop_button = tkinter.Button(master=root, text="rs", command=_reload)
 stop_button.pack(side=tkinter.LEFT)
 
 inter_button = tkinter.Button(master=root, text="Set Interval", command=_set_interval)
