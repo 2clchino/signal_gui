@@ -16,7 +16,7 @@ import read
 p_count = 20
 active = False
 interval = 100
-frames = int(100000 / interval)
+frames = int(10000000 / interval)
 line = True
 plot = True
 tim40_ofst = 0
@@ -42,25 +42,22 @@ def _stop():
 
 def update(frame):
     update_value()
-    y_data = np.diff(cnt40).tolist()
+    y_data40 = np.diff(cnt40).tolist()
+    y_data100 = np.diff(cnt100).tolist()
     t_frames.append(frame)
     x_data = t_frames
-    print(len(x_data), len(y_data))
     ax.cla()
-    if (len(y_data) > p_count):
-        y_data = y_data[len(y_data)-p_count-1:len(y_data)-1]
+    ax.set_ylim(-0.1, max(max(y_data40), max(y_data100)))
+    if (len(x_data) > p_count):
+        y_data40 = y_data40[len(y_data40)-p_count-1:len(y_data40)-1]
+        y_data100 = y_data100[len(y_data100)-p_count-1:len(y_data100)-1]
         x_data = x_data[len(x_data)-p_count-1:len(x_data)-1]
     if line:
-        ax.plot(x_data, y_data, color = "blue")
+        ax.plot(x_data, y_data40, color = "blue")
+        ax.plot(x_data, y_data100, color = "orange")
     if plot:
-        ax.plot(x_data, y_data, "o")
-    y_data = np.diff(cnt100).tolist()
-    if (len(y_data) > p_count):
-        y_data = y_data[len(y_data)-p_count-1:len(y_data)-1]
-    if line:
-        ax.plot(x_data, y_data, color = "orange")
-    if plot:
-        ax.plot(x_data, y_data, "x")
+        ax.plot(x_data, y_data40, "o")
+        ax.plot(x_data, y_data100, "x")
 
 def update_value():
     global link, cnt40, tim40, cnt100, tim100, tim40_ofst, tim100_ofst
@@ -68,8 +65,8 @@ def update_value():
     if (tim40_ofst == 0 and tim100_ofst == 0):
         tim40_ofst = values[2]
         tim100_ofst = values[3]
-    cnt40 = np.append(cnt40, values[0])
-    cnt100 = np.append(cnt100, values[1])
+    cnt40 = np.append(cnt40, values[0] * 32 / 1000000000)
+    cnt100 = np.append(cnt100, values[1] * 32 / 1000000000)
     tim40 = np.append(tim40, values[2] - tim40_ofst)
     tim100 = np.append(tim100, values[3] - tim100_ofst)
     link = values[4]
