@@ -28,7 +28,7 @@ tim40=np.empty(0)
 tim100=np.empty(0)
 link=0
 
-t_frames = []
+times = []
 
 # ----------------------------------------
 
@@ -44,8 +44,8 @@ def update(frame):
     update_value()
     y_data40 = np.diff(cnt40).tolist()
     y_data100 = np.diff(cnt100).tolist()
-    t_frames.append(frame)
-    x_data = t_frames
+    times.append(frame*interval/1000)
+    x_data = times
     ax.cla()
     ax.set_ylim(-0.1, max(max(y_data40), max(y_data100)))
     if (len(x_data) > p_count):
@@ -81,12 +81,12 @@ def _set_plc():
     p_count = int(tf_plc.get())
 
 def _init_anim():
-    global ani, fig, active, cnt40, cnt100, tim40, tim100, t_frames
+    global ani, fig, active, cnt40, cnt100, tim40, tim100, times
     cnt40=np.empty(0)
     cnt100=np.empty(0)
     tim40=np.empty(0)
     tim100=np.empty(0)
-    t_frames = []
+    times = []
     ani = animation.FuncAnimation(fig, update, frames=range(frames), init_func=update_value, interval=interval)
     ani._start()
     active = True
