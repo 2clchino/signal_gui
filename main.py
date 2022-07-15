@@ -65,8 +65,8 @@ def update_value():
     if (tim40_ofst == 0 and tim100_ofst == 0):
         tim40_ofst = values[2]
         tim100_ofst = values[3]
-    cnt40 = np.append(cnt40, values[0] * 32 / 1000000000)
-    cnt100 = np.append(cnt100, values[1] * 32 / 1000000000)
+    cnt40 = np.append(cnt40, values[0] * 32 / interval / 1000000)
+    cnt100 = np.append(cnt100, values[1] * 32 / interval / 1000000)
     tim40 = np.append(tim40, values[2] - tim40_ofst)
     tim100 = np.append(tim100, values[3] - tim100_ofst)
     link = values[4]
@@ -81,7 +81,12 @@ def _set_plc():
     p_count = int(tf_plc.get())
 
 def _init_anim():
-    global ani, fig, active
+    global ani, fig, active, cnt40, cnt100, tim40, tim100, t_frames
+    cnt40=np.empty(0)
+    cnt100=np.empty(0)
+    tim40=np.empty(0)
+    tim100=np.empty(0)
+    t_frames = []
     ani = animation.FuncAnimation(fig, update, frames=range(frames), init_func=update_value, interval=interval)
     ani._start()
     active = True
@@ -119,9 +124,9 @@ canvas.get_tk_widget().pack()
 
 stop_button = tkinter.Button(master=root, text="START", command=_init_anim)
 stop_button.pack(side=tkinter.LEFT)
-stop_button = tkinter.Button(master=root, text="ss", command=_stop)
-stop_button.pack(side=tkinter.LEFT)
-stop_button = tkinter.Button(master=root, text="rs", command=_reload)
+#stop_button = tkinter.Button(master=root, text="ss", command=_stop)
+#stop_button.pack(side=tkinter.LEFT)
+stop_button = tkinter.Button(master=root, text="RESET", command=_reload)
 stop_button.pack(side=tkinter.LEFT)
 
 inter_button = tkinter.Button(master=root, text="Set Interval", command=_set_interval)
@@ -140,6 +145,8 @@ stop_button = tkinter.Button(master=root, text="line", command=_show_line)
 stop_button.pack(side=tkinter.LEFT)
 stop_button = tkinter.Button(master=root, text="plot", command=_show_plot)
 stop_button.pack(side=tkinter.LEFT)
-inter_button = tkinter.Button(master=root, text="SaveGIF", command=_save_gif)
-inter_button.pack(side=tkinter.LEFT)
+stop_button = tkinter.Button(master=root, text="EXIT", command=root.quit)
+stop_button.pack(side=tkinter.LEFT)
+#inter_button = tkinter.Button(master=root, text="SaveGIF", command=_save_gif)
+#inter_button.pack(side=tkinter.LEFT)
 tkinter.mainloop()
